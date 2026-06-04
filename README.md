@@ -143,6 +143,7 @@ Add a `UserParameter`.
 Create a file:
 ```bash
 sudo nano /etc/zabbix/zabbix_agentd.d/domain_checks.conf
+```
 
 For example:
 
