@@ -32,7 +32,7 @@ The core domain expiration monitoring and overview dashboard structure are avail
 
 - WHOIS output differs between TLDs and registrars, so some domains may require parser adjustments.
 - Registrar distribution pie charts are not generated automatically in native Zabbix because Zabbix does not provide a simple `GROUP BY` aggregation for text item values.
-- Domain age distribution requires the optional `age_years` script mode.
+- Domain age distribution is based on WHOIS creation date parsing, which may vary between TLDs and registrars.
 - The project currently focuses on Zabbix dashboards; Grafana dashboards may be added later.
 
 ## Screenshots
@@ -63,8 +63,8 @@ The core domain expiration monitoring and overview dashboard structure are avail
 - Top domains by days remaining
 - Domain inventory table
 - Active domain problems
-- Recent name server changes
-- Optional domain age distribution
+- Name server change detection
+- Domain age distribution
 
 ---
 
@@ -265,13 +265,13 @@ Set or verify the macro:
 | Domain name servers | Zabbix agent | `check_domain["{$DOMAINNAME}",ns]` | Text |
 | Domain last checked | Zabbix agent | `check_domain["{$DOMAINNAME}",checked]` | Text |
 | Discover NS servers | Zabbix agent discovery | `check_domain["{$DOMAINNAME}","ns_discovery"]` | LLD |
+| Domain age years | Zabbix agent | `check_domain["{$DOMAINNAME}",age_years]` | Numeric unsigned |
 
 Optional future items:
 
 | Item | Type | Key | Value type |
 |---|---|---|---|
 | Domain expiration date | Zabbix agent | `check_domain["{$DOMAINNAME}",expiry_date]` | Text |
-| Domain age years | Zabbix agent | `check_domain["{$DOMAINNAME}",age_years]` | Numeric unsigned |
 | Domain NS count | Zabbix agent | `check_domain["{$DOMAINNAME}",ns_count]` | Numeric unsigned |
 
 ---
@@ -475,27 +475,6 @@ Show: Problems
 Host groups: Domain Checks
 Severity: Average, High, Disaster
 ```
-
-#### Recent NS Changes
-
-Use `Problems` or `Recent problems`.
-
-Recommended trigger idea:
-
-```text
-Name: NS servers changed on {HOST.NAME}
-Severity: Information
-Tag: type=ns-change
-```
-
-Recommended widget filters:
-
-```text
-Show: Recent problems
-Host groups: Domain Checks
-Tag: type=ns-change
-```
-
 ---
 
 ## Notes about registrar distribution
@@ -519,7 +498,6 @@ For a universal Zabbix-only template, the recommended default is to keep registr
 Planned improvements:
 
 - `expiry_date` mode for exact expiration date
-- `age_years` mode for domain age distribution
 - `ns_count` mode and trigger for domains with fewer than two name servers
 - Improved NS change audit
 - Optional Grafana dashboard
