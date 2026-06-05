@@ -600,3 +600,4 @@ Domain checks often run once per day, so a one-day graph may show little or no d
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+TL;DR: Free to use for personal and commercial projects. Attribution appreciated but not required.
