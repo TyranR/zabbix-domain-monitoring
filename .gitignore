@@ -1,0 +1,49 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backups
+*.bak
+*.backup
+*.old
+*.orig
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Zabbix exports / local generated files
+exports/
+*.local.yaml
+*.local.yml
+*.local.json
+
+# Python cache, if helper scripts are added later
+__pycache__/
+*.pyc
+
+# Node modules, if docs tooling is added later
+node_modules/

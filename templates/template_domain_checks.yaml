@@ -1,0 +1,304 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: c2ee42ce04f74d95aee2508c88d3f3ad
+      template: 'Domain Checks'
+      name: 'Domain Checks'
+      groups:
+        - name: Templates
+      items:
+        - uuid: eb390621fd984c98a56f22d4e261f711
+          name: 'Domain last checked'
+          key: 'check_domain["{$DOMAINNAME}","checked"]'
+          delay: 1d
+          value_type: TEXT
+        - uuid: 4e0f184fc9484e7e883a345b00c5d3f3
+          name: 'Domain name servers'
+          key: 'check_domain["{$DOMAINNAME}","ns"]'
+          delay: 1d
+          value_type: TEXT
+          triggers:
+            - uuid: 61624789d7274d88aac31aa307c999b9
+              expression: 'last(/Domain Checks/check_domain["{$DOMAINNAME}","ns"],#1)<>last(/Domain Checks/check_domain["{$DOMAINNAME}","ns"],#2)'
+              name: 'Domain NS servers changed'
+              opdata: 'Current NS: {ITEM.LASTVALUE1}'
+              priority: INFO
+              tags:
+                - tag: component
+                  value: dns
+                - tag: type
+                  value: ns-change
+        - uuid: dbd70850dbf04e4e86f91fdec6a7e8ea
+          name: 'Domain age years'
+          key: 'check_domain["{$DOMAINNAME}",age_years]'
+        - uuid: 32659508bd2742e2b5c6a10c229550e4
+          name: 'Domain registration date'
+          key: 'check_domain["{$DOMAINNAME}",created]'
+          delay: 1d
+          history: 90d
+          value_type: TEXT
+        - uuid: 6d8ef76817ea40498cb8782081c64643
+          name: 'Domain expiration time'
+          key: 'check_domain["{$DOMAINNAME}",expiry]'
+          delay: 1d
+          history: 90d
+          triggers:
+            - uuid: e6eb58c9f9af4b4eae5da59c735376b6
+              expression: 'last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])<=7'
+              name: 'Domain name {$DOMAINNAME} will expire in less than 7 days'
+              priority: DISASTER
+            - uuid: 6f6f8ba08b744eb798b460e165dd9902
+              expression: |
+                last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])<=30
+                and
+                last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])>7
+              name: 'Domain name {$DOMAINNAME} will expire in less than 30 days'
+              priority: HIGH
+            - uuid: 99c1691d7d9641d88011d4732fd36c94
+              expression: |
+                last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])<=60
+                and
+                last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])>30
+              name: 'Domain name {$DOMAINNAME} will expire in less than 60 days'
+              priority: AVERAGE
+        - uuid: c91a8ddc9e464c46a07d8ce91de8b392
+          name: 'Domain registrar'
+          key: 'check_domain["{$DOMAINNAME}",registrar]'
+          delay: 1d
+          value_type: CHAR
+          triggers:
+            - uuid: e6bc843f641d4e6d8490d6c3d6ca7907
+              expression: 'change(/Domain Checks/check_domain["{$DOMAINNAME}",registrar])=1'
+              name: 'Domain registrar has changed on {HOST.NAME}!'
+              opdata: '{ITEM.LASTVALUE} ➔ {ITEM.VALUE}'
+              priority: HIGH
+              description: 'Регистратор домена изменился. Проверьте легитимность сделки или возможный перехват панели управления домена.'
+              manual_close: 'YES'
+              tags:
+                - tag: reg_after
+                  value: '{ITEM.VALUE}'
+                - tag: reg_before
+                  value: '{ITEM.LASTVALUE}'
+      discovery_rules:
+        - uuid: 8ce48cb78ac7411b984ca203dc54173f
+          name: 'Discover NS Servers for {$DOMAINNAME}'
+          key: 'check_domain["{$DOMAINNAME}","ns_discovery"]'
+          delay: 1d
+          item_prototypes:
+            - uuid: 2eb63369b37c489fb5783690eae8140b
+              name: 'NS Server: {#NS_SERVER}'
+              key: 'check_domain["{$DOMAINNAME}","ns_ping","{#NS_SERVER}"]'
+              delay: 1d
+              history: 90d
+              value_type: CHAR
+              trigger_prototypes:
+                - uuid: 7d6caf0201ea4aa59272c46f438e46b8
+                  expression: 'change(/Domain Checks/check_domain["{$DOMAINNAME}","ns_ping","{#NS_SERVER}"])=0'
+                  name: 'NS Server name has changed for {HOST.NAME}!'
+                  opdata: 'Server: {#NS_SERVER} (Status has changed)'
+                  priority: HIGH
+                  tags:
+                    - tag: ns_server
+                      value: '{#NS_SERVER}'
+      macros:
+        - macro: '{$DOMAINNAME}'
+          value: '{HOST.NAME}'
+      dashboards:
+        - uuid: 536a252a50f6419a8ae78ab74e10e5ab
+          name: 'Domain information'
+          pages:
+            - widgets:
+                - type: item
+                  name: 'Domain expiration'
+                  width: '39'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: bg_color
+                      value: C5E1A5
+                    - type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Domain Checks'
+                        key: 'check_domain["{$DOMAINNAME}",expiry]'
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: STRING
+                      name: units
+                      value: 'Days to Expiration'
+                    - type: INTEGER
+                      name: units_pos
+                      value: '1'
+                    - type: INTEGER
+                      name: units_size
+                      value: '25'
+                - type: item
+                  name: 'Domain registrar'
+                  'y': '3'
+                  width: '15'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: bg_color
+                      value: FFE082
+                    - type: INTEGER
+                      name: decimal_size
+                      value: '15'
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Domain Checks'
+                        key: 'check_domain["{$DOMAINNAME}",registrar]'
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '25'
+                - type: problems
+                  name: 'Domain Alerts'
+                  'y': '6'
+                  width: '39'
+                  height: '4'
+                  fields:
+                    - type: INTEGER
+                      name: evaltype
+                      value: '2'
+                    - type: STRING
+                      name: reference
+                      value: OERVY
+                    - type: INTEGER
+                      name: show_opdata
+                      value: '2'
+                    - type: INTEGER
+                      name: tags.0.operator
+                      value: '4'
+                    - type: STRING
+                      name: tags.0.tag
+                      value: ns_server
+                    - type: STRING
+                      name: tags.0.value
+                      value: ''
+                    - type: INTEGER
+                      name: tags.1.operator
+                      value: '4'
+                    - type: STRING
+                      name: tags.1.tag
+                      value: reg_before
+                    - type: STRING
+                      name: tags.1.value
+                      value: ''
+                - type: item
+                  name: 'Registration date'
+                  x: '15'
+                  'y': '3'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: bg_color
+                      value: FFE082
+                    - type: ITEM
+                      name: itemid.0
+                      value:
+                        host: 'Domain Checks'
+                        key: 'check_domain["{$DOMAINNAME}",created]'
+                    - type: INTEGER
+                      name: show.0
+                      value: '2'
+                    - type: INTEGER
+                      name: units_bold
+                      value: '0'
+                    - type: INTEGER
+                      name: units_show
+                      value: '0'
+                    - type: INTEGER
+                      name: value_size
+                      value: '25'
+                - type: itemnavigator
+                  name: 'Domain name servers'
+                  x: '27'
+                  'y': '3'
+                  width: '12'
+                  height: '3'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: '*NS Server*'
+                    - type: STRING
+                      name: reference
+                      value: SYNSK
+                    - type: INTEGER
+                      name: state
+                      value: '0'
+                - type: svggraph
+                  name: 'Domain Expiration Trend'
+                  x: '39'
+                  width: '32'
+                  height: '10'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.color_palette
+                      value: '10'
+                    - type: INTEGER
+                      name: ds.0.fill
+                      value: '0'
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Domain expiration time'
+                    - type: INTEGER
+                      name: ds.0.transparency
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.width
+                      value: '3'
+                    - type: STRING
+                      name: reference
+                      value: DIAUF
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                    - type: INTEGER
+                      name: severities.0
+                      value: '3'
+                    - type: INTEGER
+                      name: severities.1
+                      value: '4'
+                    - type: INTEGER
+                      name: severities.2
+                      value: '5'
+                    - type: INTEGER
+                      name: show_problems
+                      value: '1'
+                    - type: INTEGER
+                      name: simple_triggers
+                      value: '1'
+                    - type: INTEGER
+                      name: working_time
+                      value: '1'
+  graphs:
+    - uuid: 2564a9cd10c747cdb9c4f9c784699919
+      name: 'Domain Expiration Trend'
+      yaxismax: '370'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        - drawtype: BOLD_LINE
+          color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: 'Domain Checks'
+            key: 'check_domain["{$DOMAINNAME}",expiry]'

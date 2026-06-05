@@ -1,0 +1,72 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: b86b64870a254ccc8d77b6ed7d966bb6
+      template: 'Domain Overview'
+      name: 'Domain Overview'
+      groups:
+        - name: Templates
+      items:
+        - uuid: 7ddc731e3c7d42a29e8de964e03c7f18
+          name: 'Domains age 0-1 years'
+          type: CALCULATED
+          key: domains.age.0_1.count
+          params: 'count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"lt",1)'
+        - uuid: a77ab86e086b4149a8bad0cbdb6ac2ec
+          name: 'Domains age 1-2 years'
+          type: CALCULATED
+          key: domains.age.1_2.count
+          params: |
+            count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"lt",2)
+            -
+            count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"lt",1)
+        - uuid: ad6e7d0e94ca4f228b7e3b22201e81e8
+          name: 'Domains age 2-5 years'
+          type: CALCULATED
+          key: domains.age.2_5.count
+          params: |
+            count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"lt",5)
+            -
+            count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"lt",2)
+        - uuid: a719dd4aab4c43eca359c7c59c779e91
+          name: 'Domains age 5+ years'
+          type: CALCULATED
+          key: domains.age.5_plus.count
+          params: 'count(last_foreach(/*/check_domain[*,age_years]?[group="{$DOMAIN_GROUP}"]),"ge",5)'
+        - uuid: 42c0f31b4c5c40c08b34d157e793c757
+          name: 'Critical Domains'
+          type: CALCULATED
+          key: domains.critical.count
+          params: 'count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",7)'
+        - uuid: e6d64063b3bf411fa9e9c26aeee4c759
+          name: 'Minimum Days Left'
+          type: CALCULATED
+          key: domains.min.days_left
+          params: 'min(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]))'
+        - uuid: 1db8ae29d2b94f05a628574bcc1355c1
+          name: 'Soon Expiring Domains'
+          type: CALCULATED
+          key: domains.soon.count
+          params: |
+            count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",30)
+            -
+            count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",7)
+        - uuid: 380434af51a0412ba6678bc43612c82f
+          name: 'Total Domains'
+          type: CALCULATED
+          key: domains.total.count
+          params: 'count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]))'
+        - uuid: 9fd2c0dc85e44099bcbb6f0ba299b5a9
+          name: 'Watchlist Domains'
+          type: CALCULATED
+          key: domains.watchlist.count
+          params: |
+            count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",60)
+            -
+            count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",30)
+      macros:
+        - macro: '{$DOMAIN_GROUP}'
+          value: Domain
