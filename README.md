@@ -600,6 +600,7 @@ Recommended item timeout for WHOIS-based checks:
 
 ```text
 10s–15s
+```
 
 ---
 ## 📊 Project Stats
