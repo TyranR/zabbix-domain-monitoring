@@ -41,6 +41,10 @@ The core domain expiration monitoring and overview dashboard structure are avail
 
 ![Domain Infrastructure Overview](docs/dashboard-overview.png)
 
+### Domain Host Dashboard
+
+![Domain Host Dashboard](docs/host-dashboard.png)
+
 ## Features
 
 ### Per-domain monitoring
@@ -589,7 +593,15 @@ Last 90 days
 Domain checks often run once per day, so a one-day graph may show little or no data.
 
 ---
+## 📊 Project Stats
 
+![GitHub stars](https://img.shields.io/github/stars/TyranR/Zabbix-Domain-Monitoring?style=social)
+![GitHub forks](https://img.shields.io/github/forks/TyranR/Zabbix-Domain-Monitoring?style=social)
+![GitHub issues](https://img.shields.io/github/issues/TyranR/Zabbix-Domain-Monitoring)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/TyranR/Zabbix-Domain-Monitoring)
+
+---
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+TL;DR: Free to use for personal and commercial projects. Attribution appreciated but not required.
