@@ -41,6 +41,10 @@ The core domain expiration monitoring and overview dashboard structure are avail
 
 ![Domain Infrastructure Overview](docs/dashboard-overview.png)
 
+### Domain Host Dashboard
+
+![Domain Host Dashboard](docs/host-dashboard.png)
+
 ## Features
 
 ### Per-domain monitoring
