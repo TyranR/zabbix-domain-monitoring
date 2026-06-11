@@ -2,6 +2,7 @@
 
 ![Zabbix](https://img.shields.io/badge/Zabbix-7.4-red)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Go](https://img.shields.io/badge/agent-Agent%202-blue)
 ![Shell](https://img.shields.io/badge/script-Bash-blue)
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)
 
