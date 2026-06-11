@@ -1,10 +1,10 @@
 # Zabbix Domain Monitoring
 
 ![Zabbix](https://img.shields.io/badge/Zabbix-7.4-red)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![Go](https://img.shields.io/badge/agent-Agent%202-blue)
-![Shell](https://img.shields.io/badge/script-Bash-blue)
+![Shell](https://img.shields.io/badge/script-Bash-yellow)
 ![Platform](https://img.shields.io/badge/platform-Linux-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 A reusable Zabbix 7.4 template set for monitoring domain expiration, WHOIS metadata, name servers, and high-level domain portfolio health.
 
