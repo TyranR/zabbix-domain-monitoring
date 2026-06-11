@@ -95,8 +95,6 @@ zabbix-domain-monitoring/
 │   └── template_domain_overview.yaml
 ├── docs/
 │   └── dashboard-overview.png
-└── examples/
-    └── domains-example.md
 ```
 
 ---
