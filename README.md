@@ -53,8 +53,8 @@ The core domain expiration monitoring and overview dashboard structure are avail
 - Days until domain expiration
 - Domain registration date
 - Registrar name
-- Name servers
 - Last check timestamp
+- Name servers
 - Name server discovery
 - Per-name-server DNS query status
 - Expiration trend graph
