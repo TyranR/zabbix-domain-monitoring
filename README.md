@@ -56,6 +56,7 @@ The core domain expiration monitoring and overview dashboard structure are avail
 - Name servers
 - Last check timestamp
 - Name server discovery
+- Per-name-server DNS query status
 - Expiration trend graph
 - Domain-specific host dashboard
 
@@ -77,11 +78,10 @@ The core domain expiration monitoring and overview dashboard structure are avail
 
 - Zabbix Server 7.4
 - Zabbix Agent 2
-- Linux host with `whois` installed
+- Linux host with `whois` and `dig` installed
 - Bash script executed through a Zabbix `UserParameter`
 
 ---
-
 
 ## Repository structure
 
@@ -139,6 +139,8 @@ Test manually:
 /usr/lib/zabbix/externalscripts/check_domain.sh example.com expiry
 /usr/lib/zabbix/externalscripts/check_domain.sh example.com registrar
 /usr/lib/zabbix/externalscripts/check_domain.sh example.com ns
+/usr/lib/zabbix/externalscripts/check_domain.sh example.com ns_discovery
+/usr/lib/zabbix/externalscripts/check_domain.sh example.com ns_query a.iana-servers.net
 ```
 
 ---
@@ -270,6 +272,14 @@ Set or verify the macro:
 | Domain last checked | Zabbix agent | `check_domain["{$DOMAINNAME}",checked]` | Text |
 | Discover NS servers | Zabbix agent discovery | `check_domain["{$DOMAINNAME}","ns_discovery"]` | LLD |
 | Domain age years | Zabbix agent | `check_domain["{$DOMAINNAME}",age_years]` | Numeric unsigned |
+
+LLD item prototypes:
+
+| Item prototype | Type | Key | Value type |
+|---|---|---|---|
+| NS server {#NS_SERVER} DNS query status | Zabbix agent | `check_domain["{$DOMAINNAME}","ns_query","{#NS_SERVER}"]` | Numeric unsigned |
+
+The `ns_query` item prototype returns `1` if the discovered name server returns a DNS SOA answer for the monitored domain, and `0` otherwise.
 
 Optional future items:
 
@@ -476,7 +486,7 @@ Recommended filters:
 
 ```text
 Show: Problems
-Host groups: Domain Checks
+Host groups: Domain
 Severity: Average, High, Disaster
 ```
 ---
@@ -570,7 +580,7 @@ If macro-based group filtering does not work in your Zabbix version, replace:
 with a literal group name:
 
 ```text
-[group="Domain Checks"]
+[group="Domain"]
 ```
 
 ### Graph is empty
