@@ -27,7 +27,7 @@ This project provides a reusable Zabbix-based monitoring setup for tracking doma
 ## Project status
 
 This project is currently under active development.
-The core domain expiration monitoring and overview dashboard structure are available. Some optional features, such as domain age distribution and exact expiration date parsing, are planned or experimental.
+The core domain expiration monitoring and overview dashboard structure are available. Some optional features, such as exact expiration date parsing, are planned. Domain age distribution is available but depends on WHOIS creation date parsing and may be inaccurate for some TLDs.
 
 ## Current limitations
 
@@ -76,7 +76,7 @@ The core domain expiration monitoring and overview dashboard structure are avail
 ## Tested with
 
 - Zabbix Server 7.4
-- Zabbix Agent
+- Zabbix Agent 2
 - Linux host with `whois` installed
 - Bash script executed through a Zabbix `UserParameter`
 
@@ -143,7 +143,7 @@ Test manually:
 
 ---
 
-### 2. Configure Zabbix Agent
+### 2. Configure Zabbix Agent 2
 
 Add a `UserParameter`.
 
@@ -187,7 +187,7 @@ Create a host group for domain hosts.
 Default name used by the overview template:
 
 ```text
-Domain Checks
+Domain
 ```
 
 You may use another name, but then update the macro `{$DOMAIN_GROUP}` in `Domain Overview`.
@@ -213,7 +213,7 @@ Example:
 
 ```text
 Host name: example.com
-Groups: Domain Checks
+Groups: Domain
 Templates: Domain Checks
 ```
 
@@ -252,7 +252,7 @@ This host does not need an agent interface if it only contains calculated items.
 Set or verify the macro:
 
 ```text
-{$DOMAIN_GROUP}=Domain Checks
+{$DOMAIN_GROUP}=Domain
 ```
 
 ---
