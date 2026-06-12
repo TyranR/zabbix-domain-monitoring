@@ -2,9 +2,10 @@
 
 domain=$(echo "$1" | tr -d '"'\')
 mode=$(echo "$2" | tr -d '"'\')
+ns_server=$(echo "$3" | tr -d '"'\')
 
 if [[ -z "$domain" ]]; then
-  echo "Usage: $0 domain.com [expiry|created|age_years|registrar|ns|ns_discovery|checked|lastcheck]"
+  echo "Usage: $0 domain.com [expiry|created|age_years|registrar|ns|ns_discovery|ns_query|checked|lastcheck]"
   exit 1
 fi
 
@@ -86,7 +87,27 @@ elif [[ "$mode" == "ns_discovery" ]]; then
     echo "  { \"{#NS_SERVER}\": \"$ns_clean\" }"
   done
   echo "]"
+  
+elif [[ "$mode" == "ns_query" ]]; then
+  if [[ -z "$ns_server" ]]; then
+    echo "0"
+    exit 0
+  fi
 
+  if ! command -v dig >/dev/null; then
+    echo "0"
+    exit 0
+  fi
+
+  ns_server_clean=$(echo "${ns_server,,}" | sed 's/\.$//')
+  dns_answer=$(dig @"$ns_server_clean" "$domain" SOA +time=5 +tries=1 +short 2>/dev/null)
+
+  if [[ -n "$dns_answer" ]]; then
+    echo "1"
+  else
+    echo "0"
+  fi
+  
 else
   # Режим подсчета дней (mode == expiry)
   expiry_line=$(echo "$whois_raw" | grep -Ei '(paid-till|expires|registry expiry date|expiration date)' | head -n 1)
