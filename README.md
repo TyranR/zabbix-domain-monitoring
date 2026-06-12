@@ -33,7 +33,7 @@ The core domain expiration monitoring and overview dashboard structure are avail
 
 - WHOIS output differs between TLDs and registrars, so some domains may require parser adjustments.
 - Registrar distribution pie charts are not generated automatically in native Zabbix because Zabbix does not provide a simple `GROUP BY` aggregation for text item values.
-- Domain age distribution is based on WHOIS creation date parsing, which may vary between TLDs and registrars.
+- Domain age distribution is available, but depends on WHOIS creation date parsing and may be inaccurate for some TLDs.
 - The project currently focuses on Zabbix dashboards; Grafana dashboards may be added later.
 
 ## Screenshots
@@ -94,7 +94,8 @@ zabbix-domain-monitoring/
 │   ├── template_domain_checks.yaml
 │   └── template_domain_overview.yaml
 ├── docs/
-│   └── dashboard-overview.png
+│   ├── dashboard-overview.png
+│   └── host-dashboard.png
 ```
 
 ---
@@ -264,7 +265,7 @@ Set or verify the macro:
 |---|---|---|---|
 | Domain expiration time | Zabbix agent | `check_domain["{$DOMAINNAME}",expiry]` | Numeric unsigned |
 | Domain registration date | Zabbix agent | `check_domain["{$DOMAINNAME}",created]` | Text |
-| Domain registrar | Zabbix agent | `check_domain["{$DOMAINNAME}",registrar]` | Text |
+| Domain registrar | Zabbix agent | `check_domain["{$DOMAINNAME}",registrar]` | CHAR |
 | Domain name servers | Zabbix agent | `check_domain["{$DOMAINNAME}",ns]` | Text |
 | Domain last checked | Zabbix agent | `check_domain["{$DOMAINNAME}",checked]` | Text |
 | Discover NS servers | Zabbix agent discovery | `check_domain["{$DOMAINNAME}","ns_discovery"]` | LLD |
