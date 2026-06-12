@@ -10,12 +10,12 @@ A reusable Zabbix 7.4 template set for monitoring domain expiration, WHOIS metad
 
 The project is designed around two templates:
 
-1. **Template Domain Checks** — attached to every monitored domain host.
-2. **Template Domain Overview** — attached to one technical overview host and used for dashboard aggregates.
+1. **Domain Checks** — attached to every monitored domain host.
+2. **Domain Overview** — attached to one technical overview host and used for dashboard aggregates.
 
 The goal is to keep Zabbix responsible for monitoring, alerting, and operational visibility, while avoiding manual per-domain dashboard work.
 
-`Template Domain Overview` is optional, but recommended if you want portfolio-level dashboard widgets and aggregate counters.
+`Domain Overview` is optional, but recommended if you want portfolio-level dashboard widgets and aggregate counters.
 
 ---
 
@@ -148,7 +148,7 @@ Add a `UserParameter`.
 
 Create a file:
 ```bash
-sudo nano /etc/zabbix/zabbix_agentd.d/domain_checks.conf
+sudo nano /etc/zabbix/zabbix_agent2.d/domain_checks.conf
 ```
 
 For example:
@@ -160,7 +160,7 @@ UserParameter=check_domain[*],/usr/lib/zabbix/externalscripts/check_domain.sh "$
 Restart the Zabbix agent:
 
 ```bash
-sudo systemctl restart zabbix-agent
+sudo systemctl restart zabbix-agent2
 ```
 
 Test from the Zabbix server:
@@ -189,7 +189,7 @@ Default name used by the overview template:
 Domain Checks
 ```
 
-You may use another name, but then update the macro `{$DOMAIN_GROUP}` in `Template Domain Overview`.
+You may use another name, but then update the macro `{$DOMAIN_GROUP}` in `Domain Overview`.
 
 ---
 
@@ -213,7 +213,7 @@ Example:
 ```text
 Host name: example.com
 Groups: Domain Checks
-Templates: Template Domain Checks
+Templates: Domain Checks
 ```
 
 Set the host macro:
@@ -243,7 +243,7 @@ Example:
 ```text
 Host name: Domain Overview
 Visible name: Domain Overview
-Templates: Template Domain Overview
+Templates: Domain Overview
 ```
 
 This host does not need an agent interface if it only contains calculated items. If your Zabbix version requires an interface during host creation, add any placeholder agent interface; it will not be used by calculated items.
@@ -258,7 +258,7 @@ Set or verify the macro:
 
 ## Items
 
-### Template Domain Checks
+### Domain Checks
 
 | Item | Type | Key | Value type |
 |---|---|---|---|
@@ -303,7 +303,7 @@ Domain name {$DOMAINNAME} will expire in 7 days or less
 
 ## Overview calculated items
 
-These items belong to `Template Domain Overview`.
+These items belong to `Domain Overview`.
 
 ### Minimum Days Left
 
