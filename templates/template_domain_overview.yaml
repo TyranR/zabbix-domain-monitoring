@@ -7,6 +7,9 @@ zabbix_export:
     - uuid: b86b64870a254ccc8d77b6ed7d966bb6
       template: 'Domain Overview'
       name: 'Domain Overview'
+      vendor:
+        name: TyranR
+        version: '2.0'
       groups:
         - name: Templates
       items:
@@ -67,6 +70,13 @@ zabbix_export:
             count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",60)
             -
             count(last_foreach(/*/check_domain[*,expiry]?[group="{$DOMAIN_GROUP}"]),"le",30)
+      tags:
+        - tag: class
+          value: software
+        - tag: scope
+          value: dns
+        - tag: target
+          value: domain
       macros:
         - macro: '{$DOMAIN_GROUP}'
           value: Domain

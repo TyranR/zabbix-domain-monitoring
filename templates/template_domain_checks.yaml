@@ -7,6 +7,9 @@ zabbix_export:
     - uuid: c2ee42ce04f74d95aee2508c88d3f3ad
       template: 'Domain Checks'
       name: 'Domain Checks'
+      vendor:
+        name: TyranR
+        version: '2.0'
       groups:
         - name: Templates
       items:
@@ -57,6 +60,7 @@ zabbix_export:
             - uuid: e6eb58c9f9af4b4eae5da59c735376b6
               expression: 'last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])<=7'
               name: 'Domain name {$DOMAINNAME} will expire in less than 7 days'
+              opdata: 'Days left: {ITEM.LASTVALUE1}'
               priority: DISASTER
             - uuid: 6f6f8ba08b744eb798b460e165dd9902
               expression: |
@@ -64,6 +68,7 @@ zabbix_export:
                 and
                 last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])>7
               name: 'Domain name {$DOMAINNAME} will expire in less than 30 days'
+              opdata: 'Days left: {ITEM.LASTVALUE1}'
               priority: HIGH
             - uuid: 99c1691d7d9641d88011d4732fd36c94
               expression: |
@@ -71,6 +76,7 @@ zabbix_export:
                 and
                 last(/Domain Checks/check_domain["{$DOMAINNAME}",expiry])>30
               name: 'Domain name {$DOMAINNAME} will expire in less than 60 days'
+              opdata: 'Days left: {ITEM.LASTVALUE1}'
               priority: AVERAGE
         - uuid: c91a8ddc9e464c46a07d8ce91de8b392
           name: 'Domain registrar'
@@ -99,20 +105,33 @@ zabbix_export:
           delay: 1d
           item_prototypes:
             - uuid: 2eb63369b37c489fb5783690eae8140b
-              name: 'NS Server: {#NS_SERVER}'
-              key: 'check_domain["{$DOMAINNAME}","ns_ping","{#NS_SERVER}"]'
+              name: 'NS Server {#NS_SERVER} DNS query status'
+              key: 'check_domain["{$DOMAINNAME}","ns_query","{#NS_SERVER}"]'
               delay: 1d
               history: 90d
-              value_type: CHAR
+              trends: '0'
+              timeout: 15s
               trigger_prototypes:
                 - uuid: 7d6caf0201ea4aa59272c46f438e46b8
-                  expression: 'change(/Domain Checks/check_domain["{$DOMAINNAME}","ns_ping","{#NS_SERVER}"])=0'
-                  name: 'NS Server name has changed for {HOST.NAME}!'
-                  opdata: 'Server: {#NS_SERVER} (Status has changed)'
-                  priority: HIGH
+                  expression: 'last(/Domain Checks/check_domain["{$DOMAINNAME}","ns_query","{#NS_SERVER}"])=0'
+                  name: 'NS server {#NS_SERVER} does not respond for {HOST.NAME}'
+                  opdata: 'Domain: {$DOMAINNAME}; NS: {#NS_SERVER}; query status: {ITEM.LASTVALUE1}'
+                  priority: AVERAGE
+                  description: 'NS query to this authoritative name server did not return a SOA answer for the monitored domain.'
                   tags:
+                    - tag: component
+                      value: dns
                     - tag: ns_server
                       value: '{#NS_SERVER}'
+                    - tag: type
+                      value: ns-query
+      tags:
+        - tag: class
+          value: software
+        - tag: scope
+          value: dns
+        - tag: target
+          value: domain
       macros:
         - macro: '{$DOMAINNAME}'
           value: '{HOST.NAME}'
