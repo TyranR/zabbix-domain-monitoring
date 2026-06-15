@@ -96,6 +96,9 @@ zabbix-domain-monitoring/
 ├── docs/
 │   ├── dashboard-overview.png
 │   └── host-dashboard.png
+├── examples/
+│   └── zabbix_agent2.d/
+│       └── domain_checks.conf
 ```
 
 ---
@@ -147,20 +150,20 @@ Test manually:
 
 ### 2. Configure Zabbix Agent 2
 
-Add a `UserParameter`.
+Add a `UserParameter` for the domain check script.
 
-Create a file:
+Create a separate Agent 2 configuration file:
 ```bash
 sudo nano /etc/zabbix/zabbix_agent2.d/domain_checks.conf
 ```
 
-For example:
+Add:
 
 ```text
 UserParameter=check_domain[*],/usr/lib/zabbix/externalscripts/check_domain.sh "$1" "$2" "$3"
 ```
 
-Restart the Zabbix agent:
+Restart the Zabbix agent 2:
 
 ```bash
 sudo systemctl restart zabbix-agent2
@@ -177,6 +180,8 @@ Expected output:
 ```text
 114
 ```
+
+If Zabbix Server runs in Docker but Zabbix Agent 2 runs natively on the host, the UserParameter path must point to the script location as seen by the host agent, not the path inside the Zabbix Server container.
 
 ---
 
