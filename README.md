@@ -629,4 +629,5 @@ Recommended item timeout for WHOIS-based checks:
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
 TL;DR: Free to use for personal and commercial projects. Attribution appreciated but not required.
